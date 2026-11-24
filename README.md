@@ -36,6 +36,13 @@ Backend-only commands can also be run with `npm run <command> --workspace backen
 
 ## Deployment
 
-Set `DATABASE_URL`, `SUPPORT_PHONE`, `NODE_ENV=production`, and the hosting platform's `PORT` in the API service environment. Set `API_HOST=0.0.0.0` when the container must accept external traffic. Build the frontend with `npm run build` and publish `dist/`. Configure the host or reverse proxy to route `/api` requests to the Express service.
+The repository is configured for Vercel: Vite serves the frontend, and the Express app is exposed as a catch-all function under `/api`. The function is placed in Frankfurt (`fra1`) near the Supabase database.
+
+1. Import `FredrickOketcho/CrestEarn` into Vercel and select the `publish` branch.
+2. Keep the project root as the Root Directory. Vercel uses the Vite build command and publishes `dist/`.
+3. Add `DATABASE_URL` as a Vercel environment variable for Production. Add `SUPPORT_PHONE` if support-account access is needed. Never commit these values.
+4. Deploy. Vercel will provide the public `vercel.app` URL. Check `/api/health` on that URL to confirm the function can reach Supabase.
+
+The Supabase schema has already been migrated. For future schema changes, set `DATABASE_URL` locally in `backend/.env` and run `npm run db:migrate` before deploying the code that depends on those changes.
 
 PostgreSQL sessions and phone/password authentication are managed by this application. Supabase Auth is not connected. Payment collection and real wallet payouts are not implemented.
